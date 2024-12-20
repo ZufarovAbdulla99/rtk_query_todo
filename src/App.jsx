@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useAddTodoMutation,
   useDeleteTodoMutation,
@@ -8,8 +8,10 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import { toast, ToastContainer, Bounce } from "react-toastify";
 import { Check, CheckCheck, X } from "lucide-react";
+import Refetch from "./components/Refetch";
 
 function App() {
+  const [show, setShow] = useState(false)
   const { data, isLoading, isSuccess, isError, error } = useGetTodosQuery();
   const [
     addTodo,
@@ -23,6 +25,17 @@ function App() {
     deleteTodo,
     { isLoading: isDeleteTodoLoading, isSuccess: isDeleteTodoSuccess },
   ] = useDeleteTodoMutation();
+
+  useEffect(() => {
+    setShow(false)
+    let timeoutId = setTimeout(() => {
+      setShow(true)
+    }, 5000)
+
+    return () => {
+      clearTimeout(timeoutId)
+    }
+  }, [isSuccess])
 
   function handleAddNewTodo() {
     addTodo({
@@ -59,6 +72,7 @@ function App() {
   if (isSuccess) {
     return (
       <div>
+        {show && <Refetch />}
         <ul>
           {data.todos.map(({ id, completed, todo }) => (
             <li key={id}>
